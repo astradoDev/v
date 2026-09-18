@@ -1,0 +1,14 @@
+const root=document.documentElement;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let paused=reduced.matches;
+const motion=document.querySelector('.motion');
+function setMotion(){root.classList.toggle('paused',paused);motion.textContent=paused?'▷':'Ⅱ';motion.setAttribute('aria-label',paused?'Activar animaciones':'Pausar animaciones');motion.title=motion.getAttribute('aria-label');motion.setAttribute('aria-pressed',String(paused));}
+setMotion();motion.addEventListener('click',()=>{paused=!paused;setMotion()});
+const reveals=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');reveals.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(e=>reveals.observe(e));
+const sections=document.querySelectorAll('main section[id]');const links=document.querySelectorAll('nav a');const active=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)links.forEach(a=>{const selected=a.hash==='#'+e.target.id;a.classList.toggle('active',selected);if(selected)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')})}),{rootMargin:'-15% 0px -55% 0px'});sections.forEach(e=>active.observe(e));
+window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;document.querySelector('.reading-progress').style.width=(max>0?scrollY/max*100:0)+'%'},{passive:true});
+const phrases=['Desarrollo experiencias digitales.','Convierto ideas en código.','Siempre hay algo por crear.'];let phrase=0,index=phrases[0].length,deleting=true;const typed=document.querySelector('#typed');
+function type(){if(paused){setTimeout(type,300);return;}const text=phrases[phrase];index+=deleting?-1:1;typed.textContent=text.slice(0,index);let delay=deleting?32:65;if(index===0){deleting=false;phrase=(phrase+1)%phrases.length;delay=350;}else if(index===text.length&&!deleting){deleting=true;delay=2600;}setTimeout(type,delay)}setTimeout(type,2800);
+const dialog=document.querySelector('#project-dialog');document.querySelector('#project-open').addEventListener('click',()=>dialog.showModal());document.querySelectorAll('.dialog-close,.dialog-done').forEach(b=>b.addEventListener('click',()=>dialog.close()));dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});
+const discordButton=document.querySelector('#copy-discord');
+discordButton.addEventListener('click',async()=>{const feedback=document.querySelector('#contact-feedback');try{await navigator.clipboard.writeText('2ps_0');feedback.textContent='Usuario copiado: 2ps_0. Agrégame en Discord.';}catch{feedback.textContent='Mi usuario de Discord es 2ps_0. Selecciónalo y cópialo para agregarme.';}});
